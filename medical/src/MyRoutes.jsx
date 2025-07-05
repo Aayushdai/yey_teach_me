@@ -5,6 +5,7 @@ import About from './About';
 import Layout from './Layout';
 import Sign from './Sign';
 import New_account from './New_account';
+import Search from './Search';
 function MyRouter() {
   return (
     <BrowserRouter>
@@ -14,6 +15,7 @@ function MyRouter() {
             <Route path="/" element={<Layout/>} >
               <Route index element={<Home/>} />
               <Route path="about" element={<About/>} />
+              <Route path="search" element={<Search/>} />
               
               
            </Route>
