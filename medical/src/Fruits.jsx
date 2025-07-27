@@ -1,10 +1,21 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ProduceGrid from './ProduceGrid';
 
 function Fruits() {
   const [produce, setProduce] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true' ||
+                       document.cookie.includes('loggedIn=true');
+
+    if (!isLoggedIn) {
+      localStorage.setItem('redirectAfterLogin', '/fruits');
+      navigate('/signup');
+      return;
+    }
+
     const data = [
       { name: 'Apple', imageKey: 'apple', type: 'fruit', price: 120 },
       { name: 'Banana', imageKey: 'banana', type: 'fruit', price: 90 },
@@ -16,12 +27,18 @@ function Fruits() {
       { name: 'Watermelon', imageKey: 'watermelon', type: 'fruit', price: 140 }
     ];
     setProduce(data);
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="bg-yellow-100 min-h-screen p-6">
       <h2 className="text-black text-3xl font-bold text-center mb-8">🍓 All Fruits</h2>
-      <ProduceGrid items={produce} type="fruit" />
+      <ProduceGrid 
+        items={produce} 
+        type="fruit" 
+        limit={0} 
+        showViewMore={false} 
+        isLoggedIn={localStorage.getItem('isLoggedIn') === 'true' || document.cookie.includes('loggedIn=true')}
+      />
     </div>
   );
 }

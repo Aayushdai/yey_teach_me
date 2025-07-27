@@ -44,7 +44,7 @@ function ProduceGrid({ items, type, limit, showViewMore }) {
             </div>
 
             {/* Image */}
-            <Link to={`/product/${encodeURIComponent(item.name)}`}>
+            <Link to={`/signup`}>
               <div className="h-52 w-full overflow-hidden bg-pink-100 cursor-pointer">
                 <img
                   src={`/src/assets/${item.imageKey}.jpg`}
@@ -61,7 +61,7 @@ function ProduceGrid({ items, type, limit, showViewMore }) {
               </h4>
               <div className="pt-2 text-center">
                 <span className="bg-green-100 text-green-800 px-3 py-1 rounded text-sm font-semibold">
-                  NPR {item.price}
+                  NPR {item.price}
                 </span>
               </div>
             </div>
@@ -69,14 +69,14 @@ function ProduceGrid({ items, type, limit, showViewMore }) {
         ))}
       </div>
 
-      {/* “View more” link */}
+      {/* "View more" link */}
       {showViewMore && (
         <div className="text-center mt-4">
           <Link
             to={`/${type}s`}
             className="text-black underline hover:text-green-300 transition"
           >
-            View More
+            View More
           </Link>
         </div>
       )}
@@ -86,16 +86,12 @@ function ProduceGrid({ items, type, limit, showViewMore }) {
 
 /* ───────────────────────── Home page component ───────────────────────── */
 function Home() {
-  /* State */
   const [produce, setProduce] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  /* Carousel slides
-     If you keep “carousal1.png” inside /src/assets, import it instead:
-     import slide1 from "../assets/carousal1.png";
-     … then use slide1 in place of "/carousal1.png". */
+  /* Carousel slides */
   const slides = [
     {
       image: "/carousal1.png",
@@ -103,19 +99,18 @@ function Home() {
       description: "We present you a variety of fresh produce",
     },
     {
-      image:"/veg.png",
+      image: "/veg.png",
       title: "Fresh Vegetables",
       description: "Direct from the farm to your table",
     },
     {
-      image:
-        "/fruit.jpg",
+      image: "/fruit.jpg",
       title: "Fresh Fruits",
       description: "The Best Ones for Your Health",
     },
   ];
 
-  /* ─── Auto‑advance every 6 s ─── */
+  /* ─── Auto‑advance every 6 s ─── */
   useEffect(() => {
     const interval = setInterval(() => {
       setIsTransitioning(true);
@@ -138,12 +133,13 @@ function Home() {
       }, 50);
     }
   };
+  
   const goToPrevSlide = () =>
     handleSlideChange((currentSlide - 1 + slides.length) % slides.length);
   const goToNextSlide = () =>
     handleSlideChange((currentSlide + 1) % slides.length);
 
-  /* ─── Fake API call (0.7 s delay) ─── */
+  /* ─── Load products (0.7s delay) ─── */
   useEffect(() => {
     setTimeout(() => {
       setProduce([
@@ -161,11 +157,11 @@ function Home() {
         { name: "Broccoli", imageKey: "broccoli", type: "vegetable", price: 80 },
         { name: "Tomato", imageKey: "tomato", type: "vegetable", price: 55 },
         { name: "Cucumber", imageKey: "cucumber", type: "vegetable", price: 50 },
-        { name: "Bell Pepper", imageKey: "bellpepper", type: "vegetable", price: 85 },
+        { name: "Bell Pepper", imageKey: "bellpepper", type: "vegetable", price: 85 },
         { name: "Spinach", imageKey: "spinach", type: "vegetable", price: 45 },
         { name: "Potato", imageKey: "potato", type: "vegetable", price: 40 },
         { name: "Onion", imageKey: "onion", type: "vegetable", price: 55 },
-        /* Dry fruits */
+        /* Dry fruits */
         { name: "Almonds", imageKey: "almonds", type: "dryfruit", price: 300 },
         { name: "Cashews", imageKey: "cashews", type: "dryfruit", price: 350 },
         { name: "Raisins", imageKey: "raisins", type: "dryfruit", price: 200 },
@@ -184,13 +180,14 @@ function Home() {
     }, 700);
   }, []);
 
-  /* Filtered arrays */
+  /* Filter products by type */
   const fruits = produce.filter((p) => p.type === "fruit");
   const vegetables = produce.filter((p) => p.type === "vegetable");
   const dryfruits = produce.filter((p) => p.type === "dryfruit");
   const dairy = produce.filter((p) => p.type === "dairy");
 
-  /* ─────────────────────── JSX ─────────────────────── */
+
+  /* ─────────────────────── JSX for logged-in users ─────────────────────── */
   return (
     <div className="scroll-smooth">
       <div className="flex flex-col items-center justify-center">
@@ -226,10 +223,10 @@ function Home() {
                       {slide.description}
                     </p>
                     <a
-                   href="#Trend"
-                  className="mt-6 inline-block px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition no-underline hover:text-green-200">
-
-                  Shop Now
+                      href="#Trend"
+                      className="mt-6 inline-block px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition no-underline hover:text-green-200"
+                    >
+                      Shop Now
                     </a>
                   </div>
                 </div>
@@ -311,7 +308,7 @@ function Home() {
                 href="#dryfruits-section"
                 className="text-black underline hover:text-green-300 transition"
               >
-                Dry Fruits
+                Dry Fruits
               </a>
               <a
                 href="#dairy-section"
@@ -330,25 +327,24 @@ function Home() {
           {/* Right placeholder */}
           <div className="hidden md:flex h-screen flex-1 items-center justify-center">
             <div className="h-[90%] w-[90%] bg-gray-200 border rounded p-[50px]">
-                          Space for Ads
-
+              Space for Ads
             </div>
           </div>
         </div>
 
-        {/* ────── Products (“Currently Trending”) ────── */}
+        {/* ────── Products ("Currently Trending") ────── */}
         <div className="w-full min-h-screen flex items-center justify-center py-8">
           <div className="w-[98%] bg-gray-200 rounded p-6 overflow-auto">
             <h2
               id="Trend"
               className="text-black text-3xl font-bold text-center mb-6"
             >
-              Currently Trending
+              Currently Trending
             </h2>
 
             {loading ? (
               <div className="flex justify-center items-center h-64">
-                <div className="text-black text-xl">Loading products…</div>
+                <div className="text-black text-xl">Loading products…</div>
               </div>
             ) : (
               <div className="space-y-8">

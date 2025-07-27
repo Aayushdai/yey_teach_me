@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 // Dynamically import all images from src/assets
 const images = import.meta.glob('/src/assets/*.jpg', { eager: true });
 
-function ProduceGrid({ items, type, limit, showViewMore }) {
+function ProduceGrid({ items, type, limit, showViewMore, isLoggedIn }) {
   const displayedItems = limit ? items.slice(0, limit) : items;
 
   return (
@@ -29,9 +29,14 @@ function ProduceGrid({ items, type, limit, showViewMore }) {
           const imgPath = `/src/assets/${item.imageKey}.jpg`;
           const imageUrl = images[imgPath]?.default;
 
+          // Fixed: Use item.name instead of item.type for the product route
+          const toRoute = isLoggedIn
+            ? `/product/${encodeURIComponent(item.name)}`  // Use product name, not type
+            : '/signup';  // Also fixed: redirect to signin instead of signup
+
           return (
             <Link
-              to={`/product/${item.name}`}
+              to={toRoute}
               key={index}
               className="relative bg-white rounded-lg shadow-lg overflow-hidden border-4 border-gray-300 transform hover:scale-105 transition-all duration-300"
             >

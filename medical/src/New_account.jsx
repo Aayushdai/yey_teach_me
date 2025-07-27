@@ -14,19 +14,16 @@ function New_account() {
   });
 
   const validateEmail = (email) => {
-    // Simple email regex
     const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return re.test(String(email).toLowerCase());
   };
 
   const validateName = (name) => {
-    // Only alphabets and spaces allowed
     const re = /^[A-Za-z\s]+$/;
     return re.test(name);
   };
 
   const validatePassword = (password) => {
-    // Minimum 8 characters, at least one uppercase letter, one lowercase letter and one number
     const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
     return re.test(password);
   };
@@ -80,12 +77,13 @@ function New_account() {
     if (hasError) return;
 
     const formData = new FormData();
+    formData.append('action', 'register');  // <---- ADD THIS LINE
     formData.append('name', name);
     formData.append('email', email);
     formData.append('password', password);
 
     try {
-      const response = await fetch('http://localhost/ok-main/medical/src/php/backend.php', {
+      const response = await fetch('http://localhost/ok/medical/src/php/backend.php', {
         method: 'POST',
         body: formData,
       });
@@ -132,9 +130,7 @@ function New_account() {
                 className="w-full p-2 border border-gray-300 rounded"
                 placeholder="Enter your full name"
               />
-              {errors.name && (
-                <p className="text-red-400 text-xs">{errors.name}</p>
-              )}
+              {errors.name && <p className="text-red-400 text-xs">{errors.name}</p>}
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Email</label>
@@ -145,9 +141,7 @@ function New_account() {
                 className="w-full p-2 border border-gray-300 rounded"
                 placeholder="Enter your email"
               />
-              {errors.email && (
-                <p className="text-red-400 text-xs">{errors.email}</p>
-              )}
+              {errors.email && <p className="text-red-400 text-xs">{errors.email}</p>}
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Password</label>
@@ -158,9 +152,7 @@ function New_account() {
                 className="w-full p-2 border border-gray-300 rounded"
                 placeholder="Enter your password"
               />
-              {errors.password && (
-                <p className="text-red-400 text-xs">{errors.password}</p>
-              )}
+              {errors.password && <p className="text-red-400 text-xs">{errors.password}</p>}
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium mb-2">Confirm Password</label>
@@ -171,9 +163,7 @@ function New_account() {
                 className="w-full p-2 border border-gray-300 rounded"
                 placeholder="Re-enter your password"
               />
-              {errors.confirmPassword && (
-                <p className="text-red-400 text-xs">{errors.confirmPassword}</p>
-              )}
+              {errors.confirmPassword && <p className="text-red-400 text-xs">{errors.confirmPassword}</p>}
             </div>
             <button
               type="submit"

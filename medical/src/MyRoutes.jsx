@@ -12,6 +12,7 @@ import Search from './Search';
 import Dryfruits from './Dryfruits';
 import Offers from './Offers';
 import Dairy from './Dairy';
+import LHome from './LHome';
 function MyRouter() {
   return (
     <BrowserRouter>
@@ -30,10 +31,11 @@ function MyRouter() {
               <Route path="/offers" element={<Offers />} />
               <Route path="/product/:name" element={<ProductDetail />} />
               <Route path="signup" element={<Sign />} />
-          
-          <Route path="New_account" element={<New_account/>} />
-              
+              <Route path="New_account" element={<New_account/>} />
+              <Route path="/lhome" element={<LHome />} />
            </Route>
+
+           
         </Routes>
         </BrowserRouter>
   );

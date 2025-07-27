@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const productData = [
   { name: 'Apple', imageKey: 'apple', type: 'fruit', price: 120 },
@@ -19,29 +19,40 @@ const productData = [
   { name: 'Potato', imageKey: 'potato', type: 'vegetable', price: 40 },
   { name: 'Onion', imageKey: 'onion', type: 'vegetable', price: 55 },
   { name: 'Almonds', imageKey: 'almonds', type: 'dryfruit', price: 300 },
-        { name: 'Cashews', imageKey: 'cashews', type: 'dryfruit', price: 350 },
-        { name: 'Raisins', imageKey: 'raisins', type: 'dryfruit', price: 200 },
-        { name: 'Walnuts', imageKey: 'walnuts', type: 'dryfruit', price: 400 },
-        { name: 'Pistachios', imageKey: 'pistachios', type: 'dryfruit', price: 380 },
-        { name: 'Dates', imageKey: 'dates', type: 'dryfruit', price: 220 },
-        { name: 'Figs', imageKey: 'figs', type: 'dryfruit', price: 260 },
-        { name: 'Milk', imageKey: 'milk', type: 'dairy', price: 90 },
-        { name: 'Cheese', imageKey: 'cheese', type: 'dairy', price: 250 },
-        { name: 'Yogurt', imageKey: 'yogurt', type: 'dairy', price: 110 },
-        { name: 'Butter', imageKey: 'butter', type: 'dairy', price: 180 },
-        { name: 'Paneer', imageKey: 'paneer', type: 'dairy', price: 220 }
-
+  { name: 'Cashews', imageKey: 'cashews', type: 'dryfruit', price: 350 },
+  { name: 'Raisins', imageKey: 'raisins', type: 'dryfruit', price: 200 },
+  { name: 'Walnuts', imageKey: 'walnuts', type: 'dryfruit', price: 400 },
+  { name: 'Pistachios', imageKey: 'pistachios', type: 'dryfruit', price: 380 },
+  { name: 'Dates', imageKey: 'dates', type: 'dryfruit', price: 220 },
+  { name: 'Figs', imageKey: 'figs', type: 'dryfruit', price: 260 },
+  { name: 'Milk', imageKey: 'milk', type: 'dairy', price: 90 },
+  { name: 'Cheese', imageKey: 'cheese', type: 'dairy', price: 250 },
+  { name: 'Yogurt', imageKey: 'yogurt', type: 'dairy', price: 110 },
+  { name: 'Butter', imageKey: 'butter', type: 'dairy', price: 180 },
+  { name: 'Paneer', imageKey: 'paneer', type: 'dairy', price: 220 },
 ];
 
 function ProductDetail() {
   const { name } = useParams();
+  const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
   const [product, setProduct] = useState(null);
 
   useEffect(() => {
-    const found = productData.find(p => p.name.toLowerCase() === name.toLowerCase());
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true' ||
+                       document.cookie.includes('loggedIn=true');
+
+    if (!isLoggedIn) {
+      localStorage.setItem('redirectAfterLogin', `/product/${name}`);
+      navigate('/signin'); // Fixed: Changed from '/signup' to '/signin'
+      return;
+    }
+
+    // Decode the URL parameter in case it was encoded
+    const decodedName = decodeURIComponent(name);
+    const found = productData.find(p => p.name.toLowerCase() === decodedName.toLowerCase());
     setProduct(found);
-  }, [name]);
+  }, [name, navigate]);
 
   if (!product) return <div className="text-white p-6">Product not found.</div>;
 
