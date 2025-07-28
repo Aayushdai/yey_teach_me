@@ -2,6 +2,7 @@
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
+header("Content-Type: application/json"); // Always return JSON
 
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
   http_response_code(200);
@@ -20,7 +21,8 @@ $conn = new mysqli($host, $username, $password, $dbname);
 
 if ($conn->connect_error) {
     http_response_code(500);
-    die("Connection failed: " . $conn->connect_error);
+    echo json_encode(["success" => false, "message" => "Database connection failed"]);
+    exit();
 }
 
 // Ensure it's POST
@@ -35,13 +37,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         if (empty($name) || empty($gmail) || empty($password)) {
             http_response_code(400);
-            echo "All fields are required.";
+            echo json_encode(["success" => false, "message" => "All fields are required"]);
             exit;
         }
 
         if (!filter_var($gmail, FILTER_VALIDATE_EMAIL)) {
             http_response_code(400);
-            echo "Invalid email format.";
+            echo json_encode(["success" => false, "message" => "Invalid email format"]);
             exit;
         }
 
@@ -50,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $stmt = $conn->prepare("INSERT INTO personal_info (Full_Name, Gmail, Password) VALUES (?, ?, ?)");
         if (!$stmt) {
             http_response_code(500);
-            echo "Prepare failed: " . $conn->error;
+            echo json_encode(["success" => false, "message" => "Database error: " . $conn->error]);
             exit;
         }
 
@@ -58,19 +60,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         if ($stmt->execute()) {
             http_response_code(201);
-            echo "Account created successfully!";
+            echo json_encode(["success" => true, "message" => "Account created successfully!"]);
         } else {
             if ($conn->errno == 1062) {
                 http_response_code(409);
-                echo "This Gmail is already registered.";
+                echo json_encode(["success" => false, "message" => "This email is already registered"]);
             } else {
                 http_response_code(500);
-                echo "Database error: " . $conn->error;
+                echo json_encode(["success" => false, "message" => "Database error: " . $conn->error]);
             }
         }
 
         $stmt->close();
-
     }
 
     // Handle login
@@ -80,26 +81,37 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         if (empty($gmail) || empty($password)) {
             http_response_code(400);
-            echo "Email and password are required.";
+            echo json_encode(["success" => false, "message" => "Email and password are required"]);
             exit;
         }
 
-        $stmt = $conn->prepare("SELECT Password FROM personal_info WHERE Gmail = ?");
+        $stmt = $conn->prepare("SELECT Full_Name, Password FROM personal_info WHERE Gmail = ?");
+        if (!$stmt) {
+            http_response_code(500);
+            echo json_encode(["success" => false, "message" => "Database error: " . $conn->error]);
+            exit;
+        }
+
         $stmt->bind_param("s", $gmail);
         $stmt->execute();
         $res = $stmt->get_result();
 
         if ($res->num_rows === 0) {
             http_response_code(404);
-            echo "User not found.";
+            echo json_encode(["success" => false, "message" => "User not found"]);
         } else {
             $row = $res->fetch_assoc();
             if (password_verify($password, $row['Password'])) {
                 http_response_code(200);
-                echo "Success: Logged in!";
+                echo json_encode([
+                    "success" => true,
+                    "message" => "Login successful",
+                    "fullName" => $row['Full_Name'],
+                    "email" => $gmail
+                ]);
             } else {
                 http_response_code(401);
-                echo "Incorrect password.";
+                echo json_encode(["success" => false, "message" => "Incorrect password"]);
             }
         }
 
@@ -109,12 +121,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Unknown action
     else {
         http_response_code(400);
-        echo "Invalid action.";
+        echo json_encode(["success" => false, "message" => "Invalid action"]);
     }
 
 } else {
     http_response_code(405);
-    echo "Invalid request method.";
+    echo json_encode(["success" => false, "message" => "Invalid request method"]);
 }
 
 $conn->close();

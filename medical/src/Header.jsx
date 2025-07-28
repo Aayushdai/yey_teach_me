@@ -53,12 +53,25 @@ function Header() {
     }
   };
 
+  // New logo click handler
+  const handleLogoClick = (e) => {
+    e.preventDefault();
+    if (isLoggedIn) {
+      navigate('/lhome');
+    } else {
+      navigate('/');
+    }
+  };
+
   return (
     <nav className="bg-white shadow-lg sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center py-3">
-          {/* Logo */}
-          <div className="flex items-center">
+          {/* Updated Logo with click handler */}
+          <div 
+            className="flex items-center cursor-pointer" 
+            onClick={handleLogoClick}
+          >
             <img src="bazar.png" alt="Bazar Logo" className="h-15 w-18" />
           </div>
 

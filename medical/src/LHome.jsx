@@ -71,8 +71,9 @@ function ProduceGrid({ items, type, limit, showViewMore }) {
 
 function Home() {
   const navigate = useNavigate();
+  const [userFullName, setUserFullName] = useState('');
 
-  // Secure login check
+  // Secure login check and get user full name
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
     const cookies = document.cookie.split(";").map((c) => c.trim());
@@ -82,15 +83,18 @@ function Home() {
       alert("You must be logged in to access this page.");
       navigate("/signup");
     }
-  }, [navigate]);
 
-  // Optional: Logout
-  function handleLogout() {
-    localStorage.removeItem("isLoggedIn");
-    document.cookie = "loggedIn=; path=/; max-age=0";
-    document.cookie = "userEmail=; path=/; max-age=0";
-    navigate("/Sign");
-  }
+    // Get user's full name from cookies or localStorage
+    const fullNameFromCookie = cookies
+      .find(row => row.startsWith("userFullName="))
+      ?.split("=")[1];
+    
+    const fullNameFromStorage = localStorage.getItem("userFullName");
+    
+    setUserFullName(
+      decodeURIComponent(fullNameFromStorage || fullNameFromCookie || "")
+    );
+  }, [navigate]);
 
   const [produce, setProduce] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -140,7 +144,7 @@ function Home() {
   useEffect(() => {
     setTimeout(() => {
       setProduce([
-       { name: "Apple", imageKey: "apple", type: "fruit", price: 120 },
+        { name: "Apple", imageKey: "apple", type: "fruit", price: 120 },
         { name: "Banana", imageKey: "banana", type: "fruit", price: 90 },
         { name: "Orange", imageKey: "orange", type: "fruit", price: 100 },
         { name: "Strawberry", imageKey: "strawberry", type: "fruit", price: 150 },
@@ -148,7 +152,6 @@ function Home() {
         { name: "Pineapple", imageKey: "pineapple", type: "fruit", price: 160 },
         { name: "Grapes", imageKey: "grapes", type: "fruit", price: 110 },
         { name: "Watermelon", imageKey: "watermelon", type: "fruit", price: 140 },
-        /* Vegetables */
         { name: "Carrot", imageKey: "carrot", type: "vegetable", price: 60 },
         { name: "Broccoli", imageKey: "broccoli", type: "vegetable", price: 80 },
         { name: "Tomato", imageKey: "tomato", type: "vegetable", price: 55 },
@@ -157,7 +160,6 @@ function Home() {
         { name: "Spinach", imageKey: "spinach", type: "vegetable", price: 45 },
         { name: "Potato", imageKey: "potato", type: "vegetable", price: 40 },
         { name: "Onion", imageKey: "onion", type: "vegetable", price: 55 },
-        /* Dry fruits */
         { name: "Almonds", imageKey: "almonds", type: "dryfruit", price: 300 },
         { name: "Cashews", imageKey: "cashews", type: "dryfruit", price: 350 },
         { name: "Raisins", imageKey: "raisins", type: "dryfruit", price: 200 },
@@ -165,7 +167,6 @@ function Home() {
         { name: "Pistachios", imageKey: "pistachios", type: "dryfruit", price: 380 },
         { name: "Dates", imageKey: "dates", type: "dryfruit", price: 220 },
         { name: "Figs", imageKey: "figs", type: "dryfruit", price: 260 },
-        /* Dairy */
         { name: "Milk", imageKey: "milk", type: "dairy", price: 90 },
         { name: "Cheese", imageKey: "cheese", type: "dairy", price: 250 },
         { name: "Yogurt", imageKey: "yogurt", type: "dairy", price: 110 },
@@ -183,8 +184,7 @@ function Home() {
 
   return (
     <div className="scroll-smooth">
-      {/* Logout Button */}
-     
+      
 
       {/* Carousel */}
       <div className="relative w-full h-[500px] overflow-hidden">
@@ -228,8 +228,16 @@ function Home() {
           ))}
         </div>
       </div>
+      {/* Welcome Message with Full Name */}
+      <div className="w-full bg-gray-100 m-[15px] py-4">
+        <div className="container mx-auto px-6">
+          <h2 className="text-2xl font-semibold text-gray-800">
+            Welcome back, {userFullName || 'User'}! 👋
+          </h2>
+        </div>
+      </div>
 
-      {/* Trending */}
+      {/* Trending Products */}
       <div className="w-full min-h-screen flex items-center justify-center py-8">
         <div className="w-[98%] bg-gray-200 rounded p-6 overflow-auto">
           <h2 id="Trend" className="text-black text-3xl font-bold text-center mb-6">

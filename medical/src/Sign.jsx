@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-function Sign() {  // Changed from SignIn to Sign to match export name
+function Sign() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
@@ -30,32 +30,36 @@ function Sign() {  // Changed from SignIn to Sign to match export name
         body: formData,
       });
 
-      const result = await response.text();
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-      if (result.toLowerCase().includes('success')) {
-        // Set authentication tokens
+      const result = await response.json();
+
+      if (result.success) {
+        // Store authentication data
         localStorage.setItem('isLoggedIn', 'true');
-        document.cookie = `loggedIn=true; path=/; max-age=${60 * 60 * 24}`; // 1 day
-        document.cookie = `userEmail=${encodeURIComponent(email)}; path=/; max-age=${60 * 60 * 24 * 7}`; // 7 days
+        localStorage.setItem('userFullName', result.fullName);
+        localStorage.setItem('userEmail', email);
+        
+        // Set cookies with SameSite and Secure flags for better security
+        const cookieOptions = `path=/; max-age=${60 * 60 * 24}; SameSite=Lax${window.location.protocol === 'https:' ? '; Secure' : ''}`;
+        document.cookie = `loggedIn=true; ${cookieOptions}`;
+        document.cookie = `userEmail=${encodeURIComponent(email)}; ${cookieOptions}`;
+        document.cookie = `userFullName=${encodeURIComponent(result.fullName)}; ${cookieOptions}`;
 
-        // Force immediate UI update across all components
+        // Update UI and redirect
         window.dispatchEvent(new Event('storage'));
-
-        // Check if there's a redirect URL stored
-        const redirectUrl = localStorage.getItem('redirectAfterLogin');
-        if (redirectUrl) {
-          localStorage.removeItem('redirectAfterLogin');
-          navigate(redirectUrl);
-        } else {
-          // Default redirect to logged-in home page
-          navigate('/lhome');
-        }
+        
+        const redirectUrl = localStorage.getItem('redirectAfterLogin') || '/lhome';
+        localStorage.removeItem('redirectAfterLogin');
+        navigate(redirectUrl);
       } else {
-        setErrorMsg(result || 'Login failed. Please try again.');
+        setErrorMsg(result.message || 'Login failed. Please check your credentials.');
       }
     } catch (error) {
-      setErrorMsg('Network error. Please try again later.');
       console.error('Login error:', error);
+      setErrorMsg(error.message || 'Network error. Please try again later.');
     } finally {
       setIsLoading(false);
     }
@@ -69,30 +73,34 @@ function Sign() {  // Changed from SignIn to Sign to match export name
           
           <form className="w-full max-w-md" onSubmit={handleSubmit}>
             <div className="mb-6">
-              <label className="block text-gray-700 text-sm font-medium mb-2">
+              <label htmlFor="email" className="block text-gray-700 text-sm font-medium mb-2">
                 Email
               </label>
               <input
+                id="email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter your email"
                 required
+                autoComplete="username"
               />
             </div>
             
             <div className="mb-6">
-              <label className="block text-gray-700 text-sm font-medium mb-2">
+              <label htmlFor="password" className="block text-gray-700 text-sm font-medium mb-2">
                 Password
               </label>
               <input
+                id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter your password"
                 required
+                autoComplete="current-password"
               />
             </div>
             
@@ -107,12 +115,24 @@ function Sign() {  // Changed from SignIn to Sign to match export name
               disabled={isLoading}
               className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50"
             >
-              {isLoading ? 'Signing In...' : 'Sign In'}
+              {isLoading ? (
+                <>
+                  <span className="inline-block animate-spin mr-2">↻</span>
+                  Signing In...
+                </>
+              ) : 'Sign In'}
             </button>
             
             <div className="mt-4 text-center text-sm text-gray-600">
               Don't have an account?{' '}
-              <a href="/signup" className="text-blue-600 hover:underline font-medium">
+              <a 
+                href="/signup" 
+                className="text-blue-600 hover:underline font-medium"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/signup');
+                }}
+              >
                 Sign Up
               </a>
             </div>
