@@ -6,7 +6,7 @@ function Footer() {
       <div className="footer-top" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', marginBottom: '30px' }}>
         {/* Brand and Newsletter */}
         <div className="footer-brand" style={{ flex: '1 1 200px', marginBottom: '20px' }}>
-          <h2>YourFruitExpress</h2>
+          <h2>Tarkari Bazar</h2>
           <p>Fresh fruits delivered fast, wherever you are.</p>
           <form>
             <input
@@ -62,7 +62,7 @@ function Footer() {
       {/* Bottom Legal */}
       <div className="footer-bottom" style={{ marginTop: '20px', textAlign: 'center', fontSize: '0.8rem' }}>
         <p>
-          © {new Date().getFullYear()} YourFruitExpress. All rights reserved. {' '}
+          © {new Date().getFullYear()} Tarkari Bazar. All rights reserved. {' '}
           <a href="/privacy">Privacy Policy</a> | <a href="/terms">Terms of Service</a>
         </p>
       </div>
