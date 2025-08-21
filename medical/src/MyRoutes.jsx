@@ -13,6 +13,9 @@ import Dryfruits from './Dryfruits';
 import Offers from './Offers';
 import Dairy from './Dairy';
 import LHome from './LHome';
+import Paymentgateway from './Paymentgateway';
+import Esewa  from './Esewa';
+import Khalti from './Khalti';
 function MyRouter() {
   return (
     <BrowserRouter>
@@ -27,13 +30,16 @@ function MyRouter() {
               <Route path="/vegetables" element={<Vegetables />} />
               <Route path="/dryfruits" element={<Dryfruits />} />
               <Route path="/dairys" element={<Dairy />} />
-
+              <Route path="/paymentgateway" element={<Paymentgateway />} />
               <Route path="/offers" element={<Offers />} />
               <Route path="/product/:name" element={<ProductDetail />} />
               <Route path="signup" element={<Sign />} />
               <Route path="New_account" element={<New_account/>} />
               <Route path="/lhome" element={<LHome />} />
+              <Route path="/esewa" element={<Esewa />} />
+           <Route path="/khalti" element={<Khalti />} />
            </Route>
+           
 
            
         </Routes>

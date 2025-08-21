@@ -44,7 +44,7 @@ function ProductDetail() {
 
     if (!isLoggedIn) {
       localStorage.setItem('redirectAfterLogin', `/product/${name}`);
-      navigate('/signin'); // Fixed: Changed from '/signup' to '/signin'
+      navigate('/signin');
       return;
     }
 
@@ -82,8 +82,20 @@ function ProductDetail() {
           </button>
         </div>
         <p className="text-xl font-semibold mb-4">Total: NPR {product.price * quantity}</p>
-        <button className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
-          Add to Cart
+        <button
+          onClick={() =>
+            navigate('/paymentgateway', {
+              state: {
+                productName: product.name,
+                price: product.price,
+                quantity: quantity,
+                total: product.price * quantity,
+              },
+            })
+          }
+          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+        >
+          Buy
         </button>
       </div>
     </div>

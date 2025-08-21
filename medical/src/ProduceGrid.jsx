@@ -32,7 +32,7 @@ function ProduceGrid({ items, type, limit, showViewMore, isLoggedIn }) {
           // Fixed: Use item.name instead of item.type for the product route
           const toRoute = isLoggedIn
             ? `/product/${encodeURIComponent(item.name)}`  // Use product name, not type
-            : '/signup';  // Also fixed: redirect to signin instead of signup
+            : '/signin';  // Fixed: redirect to signin instead of signup
 
           return (
             <Link

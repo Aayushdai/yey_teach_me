@@ -130,7 +130,7 @@ function Sign() {
                 className="text-blue-600 hover:underline font-medium"
                 onClick={(e) => {
                   e.preventDefault();
-                  navigate('/signup');
+                  navigate('/New_account');
                 }}
               >
                 Sign Up
